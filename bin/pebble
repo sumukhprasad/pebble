@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use lib './lib';
+
+
+my $cmd = shift @ARGV || 'help';
+
+
+if ($cmd eq 'build') {
+	my $site_dir = shift @ARGV || '.';
+	print "$site_dir\n";
+}
+else {
+	print("$cmd ???\ncommand does not exist.\n\n");
+	print "pebble <command> [site-dir]
+
+Commands:
+  build    Build the static site
+";
+}
