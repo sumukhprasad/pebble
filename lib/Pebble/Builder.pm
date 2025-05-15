@@ -44,10 +44,11 @@ sub build {
 		 Pebble::Renderer::render_markdown($md_file, $site_dir, $output_dir, $root_config);
 	}
 	
-	
 	for my $entry (@entries) {
 		my $path = "$site_dir/$entry";
 		next unless -d $path;
+		
+		print "Processing $entry...\n"
 	
 		my $config = Pebble::Config::load_config($path);
 		my @markdown_files;

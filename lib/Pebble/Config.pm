@@ -16,16 +16,16 @@ sub load_config {
 		print "Found config-assemble for $path, running...\n";
 
 		my $original_dir = getcwd();
-		chdir $path or die "Couldn't chdir to $path: $!";
+		chdir $path or die "Couldn't chdir to $path: $!\n";
 		
 		%main::config = ();
 
 		do './config-assemble.pl';
-		if ($@) { die "Error running config-assemble.pl: $@"; }
+		if ($@) { die "Error running config-assemble.pl: $@\n"; }
 
 		%config = %main::config;
 
-		chdir $original_dir or die "Couldn't return to original dir: $!";
+		chdir $original_dir or die "Couldn't return to original dir: $!\n";
 	}
 	elsif (-e $hash) {
 		print "Loading config for $path...\n";
