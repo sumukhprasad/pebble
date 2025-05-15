@@ -11,7 +11,7 @@ my $cmd = shift @ARGV || 'help';
 
 if ($cmd eq 'build') {
 	my $site_dir = shift @ARGV || '.';
-	print "$site_dir\n";
+     Pebble::Builder::build($site_dir);
 }
 else {
 	print("$cmd ???\ncommand does not exist.\n\n");
