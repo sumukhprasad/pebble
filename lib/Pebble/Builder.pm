@@ -48,7 +48,7 @@ sub build {
 		my $path = "$site_dir/$entry";
 		next unless -d $path;
 		
-		print "Processing $entry...\n"
+		print "Processing $entry...\n";
 	
 		my $config = Pebble::Config::load_config($path);
 		my @markdown_files;

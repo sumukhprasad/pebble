@@ -4,13 +4,21 @@ use strict;
 use warnings;
 use Cwd;
 use File::Spec;
+use YAML::Tiny;
 
 sub load_config {
 	my ($path) = @_;
 	my %config;
 
 	my $assemble = File::Spec->catfile($path, 'config-assemble.pl');
-	my $hash	 = File::Spec->catfile($path, 'config.pl');
+	my $yaml;
+	for my $ext (qw(yml yaml)) {
+		my $try = File::Spec->catfile($path, "config.$ext");
+		if (-e $try) {
+			$yaml = $try;
+			last;
+		}
+	}
 
 	if (-e $assemble) {
 		print "Found config-assemble for $path, running...\n";
@@ -27,17 +35,19 @@ sub load_config {
 
 		chdir $original_dir or die "Couldn't return to original dir: $!\n";
 	}
-	elsif (-e $hash) {
-		print "Loading config for $path...\n";
+	elsif (-e $yaml) {
+		print "Loading config from YAML for $path...\n";
 
-		%main::config = ();
-		do $hash;
-		%config = %main::config;
+		my $yaml_obj = YAML::Tiny->read($yaml)
+			or die "Couldn't read $yaml: $YAML::Tiny::errstr";
+			
+		%config = %{ $yaml_obj->[0] };
 	}
 	else {
 		print "No config for $path, using defaults.\n";
 		%config = ();
 	}
+	
 
 	return \%config;
 }

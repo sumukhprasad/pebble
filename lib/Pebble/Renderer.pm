@@ -8,21 +8,42 @@ use File::Path 'make_path';
 use File::Slurp;
 
 sub render_markdown {
-	my ($md_file, $site_dir, $output_dir, $config) = @_;
+	my ($md_file, $site_dir, $output_dir, $default_config) = @_;
 
-	my $content = read_file($md_file);
-	my $html = markdown($content);
+	my $raw = read_file($md_file);
 
-	my $layout = $config->{layout} || 'default';
+	my %frontmatter;
+	my $body = $raw;
+
+	if ($raw =~ /^---\s*\n(.*?)\n---\s*\n(.*)/s) {
+		my $header = $1;
+		$body = $2;
+
+		for my $line (split /\n/, $header) {
+			if ($line =~ /^\s*(\w+)\s*:\s*(.+?)\s*$/) {
+				$frontmatter{$1} = $2;
+			}
+		}
+	}
+
+	my $html = markdown($body);
+
+	my $layout = $frontmatter{layout} || $default_config->{layout} || 'default';
 	my $layout_path = "$site_dir/_layouts/$layout.html";
+	
+	my $final_html = $html;
 
-	my $final_html;
 	if (-e $layout_path) {
 		my $layout_tpl = read_file($layout_path);
-		$layout_tpl =~ s/\{\{\s*content\s*\}\}/$html/;
+
+		$layout_tpl =~ s/\{\{\s*content\s*\}\}/$html/g;
+
+		for my $key (keys %frontmatter) {
+			my $val = $frontmatter{$key};
+			$layout_tpl =~ s/\{\{\s*$key\s*\}\}/$val/g;
+		}
+
 		$final_html = $layout_tpl;
-	} else {
-		$final_html = $html;
 	}
 
 	my $out_path = $md_file;

@@ -17,6 +17,7 @@ WriteMakefile(
 		'Cwd' => 0,
 		'Text::Markdown' => 0,
 		'Getopt::Long' => 0,
+		'YAML::Tiny' => 0,
 	},
 	META_MERGE => {
 		'meta-spec' => { version => 2 },
