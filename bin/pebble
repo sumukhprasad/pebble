@@ -5,13 +5,30 @@ use warnings;
 use lib './lib';
 
 use Pebble::Builder;
+use Pebble::Server;
+use Pebble::Utils qw(run_with_temp_restore);
+
+use Data::GUID qw( guid_string );
 
 my $cmd = shift @ARGV || 'help';
 
 
 if ($cmd eq 'build') {
 	my $site_dir = shift @ARGV || '.';
-     Pebble::Builder::build($site_dir);
+	Pebble::Builder::build($site_dir, "$site_dir/_site");
+}
+elsif ($cmd eq 'serve') {
+	use Getopt::Long;
+
+	my $port = 3000;
+	GetOptions('p|port=i' => \$port);
+
+	my $site_dir = shift @ARGV || '.';
+	
+	my $guid = guid_string();
+
+	Pebble::Builder::build($site_dir, "/tmp/$guid");
+	Pebble::Server->start_server($port, $site_dir, "/tmp/$guid");
 }
 else {
 	print("$cmd ???\ncommand does not exist.\n\n");
@@ -19,5 +36,12 @@ else {
 
 Commands:
   build    Build the static site
+           e.g., pebble build (defaults to current directory)
+		       pebble build <site directory>
+
+  serve    Start live server
+           e.g., pebble serve (defaults to current directory, port 3000)
+		       pebble serve <site directory> (defaults to port 3000)
+		       pebble serve <site directory> -p 1234 (port 1234)
 ";
 }

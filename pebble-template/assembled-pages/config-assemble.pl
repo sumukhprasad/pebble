@@ -7,7 +7,7 @@ my $now = strftime "%Y-%m-%d %H:%M:%S", localtime;
 my $filename = "index.md";
 
 my $content = <<"MD";
-# Assembled File Example
+# _Assembled File Example_
 This post was generated at **$now**.
 MD
 
